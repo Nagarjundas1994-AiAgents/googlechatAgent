@@ -1,0 +1,110 @@
+/* Additional custom styles */
+
+/* Improve chat message appearance */
+.user-message {
+    background-color: #e9ecef;
+    padding: 0.75rem;
+    border-radius: 1rem 1rem 1rem 0;
+    margin-bottom: 1rem;
+    max-width: 80%;
+    align-self: flex-start;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.assistant-message {
+    background-color: #d1e7ff;
+    padding: 0.75rem;
+    border-radius: 1rem 1rem 0 1rem;
+    margin-bottom: 1rem;
+    max-width: 80%;
+    align-self: flex-end;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+/* Improve source citation styling */
+.source-citation {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border-left: 3px solid #6c757d;
+}
+
+.source-citation ul {
+    margin-bottom: 0;
+    padding-left: 1.5rem;
+}
+
+/* Improve file upload area */
+.file-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 0.25rem;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #adb5bd;
+    background-color: #f8f9fa;
+}
+
+/* Improve tabs */
+.nav-tabs .nav-link {
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom: 2px solid #0d6efd;
+}
+
+/* Improve chat container */
+.chat-container {
+    height: 60vh;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Improve question input */
+#questionForm {
+    position: relative;
+}
+
+#questionInput {
+    padding-right: 3rem;
+    border-radius: 1.5rem;
+    height: 3rem;
+}
+
+#questionForm button {
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-message, .assistant-message {
+        max-width: 90%;
+    }
+    
+    .chat-container {
+        height: 50vh;
+    }
+}

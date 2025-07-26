@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Document QA Chatbot{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/custom.css') }}">
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-chat-square-text me-2"></i>
+                AI Document Assistant
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">
+                            <i class="bi bi-house me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="clearSessionBtn">
+                            <i class="bi bi-trash me-1"></i> Clear Session
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#helpModal">
+                            <i class="bi bi-question-circle me-1"></i> Help
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container content py-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpModalLabel">How to Use This Application</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Getting Started</h6>
+                    <ol>
+                        <li>Upload a document or provide a URL to crawl</li>
+                        <li>Wait for the processing to complete</li>
+                        <li>Ask questions about your document in the chat</li>
+                    </ol>
+                    
+                    <h6>Supported Document Types</h6>
+                    <ul>
+                        <li>PDF files</li>
+                        <li>Word documents (.docx)</li>
+                        <li>Text files (.txt)</li>
+                        <li>HTML files</li>
+                    </ul>
+                    
+                    <h6>Tips for Better Results</h6>
+                    <ul>
+                        <li>Ask specific questions</li>
+                        <li>For web crawling, start with a lower depth</li>
+                        <li>Larger documents may take longer to process</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5><i class="bi bi-robot me-2"></i>AI Document QA Chatbot</h5>
+                    <p class="text-muted">An intelligent document analysis and question answering system powered by advanced AI technology.</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="text-light me-3"><i class="bi bi-github"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="text-light"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5>Features</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Document Analysis</a></li>
+                        <li><a href="#">Web Crawling</a></li>
+                        <li><a href="#">AI Chat Interface</a></li>
+                        <li><a href="#">Source Citations</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5>Resources</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Examples</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h5>Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 mb-3">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p class="mb-0">&copy; 2023 AI Document QA Chatbot</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js"></script>
+    <script>
+        // Generate a session ID if one doesn't exist
+        if (!localStorage.getItem('sessionId')) {
+            localStorage.setItem('sessionId', uuidv4());
+        }
+        
+        // Clear session data
+        document.getElementById('clearSessionBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const sessionId = localStorage.getItem('sessionId');
+            
+            fetch(`/clear/${sessionId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Clear chat messages from UI
+                const chatContainer = document.getElementById('chatMessages');
+                if (chatContainer) {
+                    chatContainer.innerHTML = '';
+                }
+                alert('Session cleared successfully!');
+            })
+            .catch(error => {
+                console.error('Error clearing session:', error);
+                alert('Error clearing session. Please try again.');
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
