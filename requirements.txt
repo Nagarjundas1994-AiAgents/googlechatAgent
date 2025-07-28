@@ -16,15 +16,12 @@ readability-lxml==0.8.1
 requests==2.31.0
 
 # Google Cloud services and AI
-google-cloud-aiplatform==1.38.0
-google-cloud-storage==2.13.0
-google-auth==2.23.4
-google-cloud-secretmanager==2.16.4
+google-cloud-aiplatform
+google-cloud-storage
+google-auth
+vertexai
 
 # Utilities
 python-dotenv==1.0.0
 pydantic==2.5.2
 tqdm==4.66.1
-
-# Additional dependencies for production
-gunicorn==21.2.0
