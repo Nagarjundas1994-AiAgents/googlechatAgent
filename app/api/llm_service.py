@@ -3,8 +3,8 @@ import logging
 from typing import List, Dict, Any, Tuple
 import json
 from dotenv import load_dotenv
-import openai
-from google.cloud import aiplatform
+import vertexai
+from vertexai.generative_models import GenerativeModel, Part
 from google.oauth2 import service_account
 
 load_dotenv()
@@ -12,33 +12,30 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Get configuration from environment variables
-LLM_MODEL = os.getenv("LLM_MODEL", "gpt-3.5-turbo")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash-002")
 GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 GCP_LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 GCP_SERVICE_ACCOUNT_FILE = os.getenv("GCP_SERVICE_ACCOUNT_FILE")
 
-# Initialize clients based on configuration
-def initialize_clients():
-    """Initialize the necessary clients based on configuration"""
-    global openai_client, vertex_ai_client
-    
-    # Initialize OpenAI client
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    if openai_api_key:
-        openai.api_key = openai_api_key
-    
-    # Initialize Vertex AI client
-    if LLM_MODEL.startswith("gemini"):
+# Initialize Vertex AI
+def initialize_vertex_ai():
+    """Initialize Vertex AI client"""
+    try:
         if GCP_SERVICE_ACCOUNT_FILE and os.path.exists(GCP_SERVICE_ACCOUNT_FILE):
             credentials = service_account.Credentials.from_service_account_file(
                 GCP_SERVICE_ACCOUNT_FILE
             )
-            aiplatform.init(project=GCP_PROJECT_ID, location=GCP_LOCATION, credentials=credentials)
+            vertexai.init(project=GCP_PROJECT_ID, location=GCP_LOCATION, credentials=credentials)
         else:
-            aiplatform.init(project=GCP_PROJECT_ID, location=GCP_LOCATION)
+            # Use default credentials (for Cloud Run)
+            vertexai.init(project=GCP_PROJECT_ID, location=GCP_LOCATION)
+        logger.info(f"Vertex AI initialized with project: {GCP_PROJECT_ID}, location: {GCP_LOCATION}")
+    except Exception as e:
+        logger.error(f"Failed to initialize Vertex AI: {str(e)}")
+        raise
 
-# Initialize clients
-initialize_clients()
+# Initialize Vertex AI
+initialize_vertex_ai()
 
 async def generate_answer(
     question: str,
@@ -93,60 +90,42 @@ async def generate_answer(
         # Add the current question
         messages.append({"role": "user", "content": question})
         
-        # Generate the answer using the appropriate LLM
-        if LLM_MODEL.startswith("gpt"):
-            return await generate_with_openai(messages, sources)
-        elif LLM_MODEL.startswith("gemini"):
-            return await generate_with_gemini(messages, sources)
-        else:
-            raise ValueError(f"Unsupported LLM model: {LLM_MODEL}")
+        # Generate the answer using Gemini 2.5 Flash
+        return await generate_with_gemini(messages, sources)
     except Exception as e:
         logger.error(f"Error generating answer: {str(e)}")
         raise
 
-async def generate_with_openai(messages: List[Dict[str, str]], sources: List[Dict[str, Any]]) -> Tuple[str, List[Dict[str, Any]]]:
-    """Generate an answer using OpenAI's API"""
-    try:
-        response = openai.ChatCompletion.create(
-            model=LLM_MODEL,
-            messages=messages,
-            temperature=0.3,
-            max_tokens=1000
-        )
-        
-        answer = response.choices[0].message.content
-        return answer, sources
-    except Exception as e:
-        logger.error(f"Error generating with OpenAI: {str(e)}")
-        raise
-
 async def generate_with_gemini(messages: List[Dict[str, str]], sources: List[Dict[str, Any]]) -> Tuple[str, List[Dict[str, Any]]]:
-    """Generate an answer using Google's Gemini API"""
+    """Generate an answer using Google's Gemini 2.5 Flash"""
     try:
-        # Convert messages to Gemini format
-        gemini_messages = []
+        # Initialize the Gemini model
+        model = GenerativeModel(LLM_MODEL)
+        
+        # Prepare the conversation history
+        conversation_text = ""
+        system_prompt = ""
+        
         for message in messages:
             role = message["role"]
             content = message["content"]
             
             if role == "system":
-                # Gemini doesn't have a system role, so we'll add it as a user message
-                gemini_messages.append({"role": "user", "parts": [{"text": content}]})
-                gemini_messages.append({"role": "model", "parts": [{"text": "I understand. I'll follow these instructions."}]})
+                system_prompt = content
             elif role == "user":
-                gemini_messages.append({"role": "user", "parts": [{"text": content}]})
+                conversation_text += f"User: {content}\n"
             elif role == "assistant":
-                gemini_messages.append({"role": "model", "parts": [{"text": content}]})
+                conversation_text += f"Assistant: {content}\n"
         
-        # Initialize the Gemini model
-        model = aiplatform.GenerativeModel(LLM_MODEL)
+        # Combine system prompt with conversation
+        full_prompt = f"{system_prompt}\n\nConversation:\n{conversation_text}\nAssistant:"
         
         # Generate the response
         response = model.generate_content(
-            gemini_messages,
+            full_prompt,
             generation_config={
                 "temperature": 0.3,
-                "max_output_tokens": 1000,
+                "max_output_tokens": 2048,
                 "top_p": 0.95,
                 "top_k": 40
             }

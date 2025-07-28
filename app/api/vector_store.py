@@ -4,22 +4,10 @@ from typing import List, Dict, Any, Optional, Tuple
 import json
 import uuid
 from dotenv import load_dotenv
-import openai
+import vertexai
+from vertexai.language_models import TextEmbeddingModel
 from google.cloud import aiplatform
 from google.oauth2 import service_account
-
-# Try to import optional vector DB clients
-try:
-    import pinecone
-    PINECONE_AVAILABLE = True
-except ImportError:
-    PINECONE_AVAILABLE = False
-
-try:
-    import weaviate
-    WEAVIATE_AVAILABLE = True
-except ImportError:
-    WEAVIATE_AVAILABLE = False
 
 load_dotenv()
 
@@ -27,53 +15,37 @@ logger = logging.getLogger(__name__)
 
 # Get configuration from environment variables
 VECTOR_DB_TYPE = os.getenv("VECTOR_DB_TYPE", "vertex_ai").lower()
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-ada-002")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
 GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 GCP_LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 GCP_SERVICE_ACCOUNT_FILE = os.getenv("GCP_SERVICE_ACCOUNT_FILE")
+VECTOR_INDEX_NAME = os.getenv("VECTOR_INDEX_NAME", "ai-agent-vector-index")
+VECTOR_INDEX_ENDPOINT_NAME = os.getenv("VECTOR_INDEX_ENDPOINT_NAME", "ai-agent-vector-endpoint")
 
-# Initialize clients based on configuration
-def initialize_clients():
-    """Initialize the necessary clients based on configuration"""
-    global openai_client, vertex_ai_client, pinecone_client, weaviate_client
-    
-    # Initialize OpenAI client
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    if openai_api_key:
-        openai.api_key = openai_api_key
-    
-    # Initialize Vertex AI client if using Vertex AI
-    if VECTOR_DB_TYPE == "vertex_ai":
+# Initialize Vertex AI
+def initialize_vertex_ai():
+    """Initialize Vertex AI client"""
+    try:
         if GCP_SERVICE_ACCOUNT_FILE and os.path.exists(GCP_SERVICE_ACCOUNT_FILE):
             credentials = service_account.Credentials.from_service_account_file(
                 GCP_SERVICE_ACCOUNT_FILE
             )
+            vertexai.init(project=GCP_PROJECT_ID, location=GCP_LOCATION, credentials=credentials)
             aiplatform.init(project=GCP_PROJECT_ID, location=GCP_LOCATION, credentials=credentials)
         else:
+            # Use default credentials (for Cloud Run)
+            vertexai.init(project=GCP_PROJECT_ID, location=GCP_LOCATION)
             aiplatform.init(project=GCP_PROJECT_ID, location=GCP_LOCATION)
-    
-    # Initialize Pinecone client if using Pinecone
-    if VECTOR_DB_TYPE == "pinecone" and PINECONE_AVAILABLE:
-        pinecone_api_key = os.getenv("PINECONE_API_KEY")
-        pinecone_environment = os.getenv("PINECONE_ENVIRONMENT")
-        if pinecone_api_key and pinecone_environment:
-            pinecone.init(api_key=pinecone_api_key, environment=pinecone_environment)
-    
-    # Initialize Weaviate client if using Weaviate
-    if VECTOR_DB_TYPE == "weaviate" and WEAVIATE_AVAILABLE:
-        weaviate_url = os.getenv("WEAVIATE_URL")
-        weaviate_api_key = os.getenv("WEAVIATE_API_KEY")
-        if weaviate_url:
-            auth_config = None
-            if weaviate_api_key:
-                auth_config = weaviate.auth.AuthApiKey(api_key=weaviate_api_key)
-            weaviate_client = weaviate.Client(url=weaviate_url, auth_client_secret=auth_config)
+        logger.info(f"Vertex AI initialized for vector operations")
+    except Exception as e:
+        logger.error(f"Failed to initialize Vertex AI: {str(e)}")
+        raise
 
-# Initialize clients
-initialize_clients()
+# Initialize Vertex AI
+initialize_vertex_ai()
 
 async def generate_embeddings(text: str) -> List[float]:
-    """Generate embeddings for a text using the configured embedding model
+    """Generate embeddings for a text using Google's text-embedding-004 model
     
     Args:
         text: The text to generate embeddings for
@@ -82,20 +54,10 @@ async def generate_embeddings(text: str) -> List[float]:
         A list of floats representing the embedding vector
     """
     try:
-        if EMBEDDING_MODEL.startswith("text-embedding"):
-            # Using OpenAI embeddings
-            response = openai.Embedding.create(
-                input=text,
-                model=EMBEDDING_MODEL
-            )
-            return response["data"][0]["embedding"]
-        elif EMBEDDING_MODEL.startswith("models/embedding"):
-            # Using Google Vertex AI embeddings
-            model = aiplatform.TextEmbeddingModel.from_pretrained(EMBEDDING_MODEL)
-            embeddings = model.get_embeddings([text])
-            return embeddings[0].values
-        else:
-            raise ValueError(f"Unsupported embedding model: {EMBEDDING_MODEL}")
+        # Using Google Vertex AI text-embedding-004
+        model = TextEmbeddingModel.from_pretrained(EMBEDDING_MODEL)
+        embeddings = model.get_embeddings([text])
+        return embeddings[0].values
     except Exception as e:
         logger.error(f"Error generating embeddings: {str(e)}")
         raise

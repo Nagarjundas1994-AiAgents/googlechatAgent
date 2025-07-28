@@ -163,13 +163,92 @@ async def clear_session(session_id: str):
         }
     )
 
+@app.post("/webhook")
+async def agent_builder_webhook(request: Request):
+    """Webhook endpoint for Google Agent Builder integration"""
+    try:
+        # Parse the request from Agent Builder
+        body = await request.json()
+        
+        # Extract the query and session info
+        query_text = body.get("text", "")
+        session_id = body.get("sessionInfo", {}).get("session", "default")
+        
+        if not query_text:
+            return JSONResponse(
+                content={
+                    "fulfillmentResponse": {
+                        "messages": [
+                            {
+                                "text": {
+                                    "text": ["I didn't receive a question. Please ask me something about your documents."]
+                                }
+                            }
+                        ]
+                    }
+                }
+            )
+        
+        # Query the vector store for relevant context
+        context_chunks = await query_vector_store(query_text, session_id)
+        
+        # Get conversation history
+        history = conversation_store.get(session_id, [])
+        
+        # Generate an answer using the LLM
+        answer, sources = await generate_answer(query_text, context_chunks, history)
+        
+        # Update conversation history
+        history.append({"role": "user", "content": query_text})
+        history.append({"role": "assistant", "content": answer})
+        conversation_store[session_id] = history
+        
+        # Format response for Agent Builder
+        response_text = answer
+        if sources:
+            source_list = "\n\nSources:\n" + "\n".join([
+                f"• {source.get('source', 'Unknown')}" for source in sources[:3]
+            ])
+            response_text += source_list
+        
+        return JSONResponse(
+            content={
+                "fulfillmentResponse": {
+                    "messages": [
+                        {
+                            "text": {
+                                "text": [response_text]
+                            }
+                        }
+                    ]
+                }
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error in webhook: {str(e)}")
+        return JSONResponse(
+            content={
+                "fulfillmentResponse": {
+                    "messages": [
+                        {
+                            "text": {
+                                "text": ["I'm sorry, I encountered an error processing your request. Please try again."]
+                            }
+                        }
+                    ]
+                }
+            }
+        )
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint for Docker and monitoring"""
     return JSONResponse(
         content={
             "status": "healthy",
-            "version": "1.0.0"
+            "version": "1.0.0",
+            "model": os.getenv("LLM_MODEL", "gemini-2.5-flash-002"),
+            "embedding_model": os.getenv("EMBEDDING_MODEL", "text-embedding-004")
         }
     )
 
