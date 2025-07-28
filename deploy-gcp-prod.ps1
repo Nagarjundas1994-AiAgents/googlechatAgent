@@ -97,18 +97,18 @@ $serviceUrl = gcloud run services describe ai-agent --region=$env:GCP_LOCATION -
 
 Write-Host "Deployment completed successfully!" -ForegroundColor Green
 Write-Host ""
-Write-Host "Your AI Agent is now deployed at: $serviceUrl" -ForegroundColor Cyan
+Write-Host "Your AI Agent is now deployed at: https://ai-agent-nzhkpa3xwa-uc.a.run.app/" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Next steps for Google Agent Builder integration:" -ForegroundColor Yellow
 Write-Host "1. Go to Google Cloud Console > Agent Builder" -ForegroundColor White
 Write-Host "2. Create a new agent or use existing one" -ForegroundColor White
-Write-Host "3. Set up webhook URL: $serviceUrl/webhook" -ForegroundColor White
+Write-Host "3. Set up webhook URL: https://ai-agent-nzhkpa3xwa-uc.a.run.app/webhook" -ForegroundColor White
 Write-Host "4. Configure intents and training phrases" -ForegroundColor White
 Write-Host "5. Test your agent" -ForegroundColor White
 Write-Host ""
 Write-Host "Additional setup required:" -ForegroundColor Yellow
 Write-Host "1. Complete Vector Search index setup if needed" -ForegroundColor White
-Write-Host "2. Upload initial documents through the web interface: $serviceUrl" -ForegroundColor White
+Write-Host "2. Upload initial documents through the web interface: https://ai-agent-nzhkpa3xwa-uc.a.run.app/" -ForegroundColor White
 Write-Host "3. Configure agent intents and responses" -ForegroundColor White
 Write-Host ""
 Write-Host "Monitor your deployment:" -ForegroundColor Yellow

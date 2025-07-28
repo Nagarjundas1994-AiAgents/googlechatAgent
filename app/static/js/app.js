@@ -46,9 +46,9 @@ function initUIComponents() {
  * Initialize event listeners
  */
 function initEventListeners() {
-    // Add drag and drop support for file uploads
-    const fileUploadArea = document.querySelector('.file-upload-area');
-    if (fileUploadArea) {
+    // Add drag and drop support for file uploads (desktop only)
+    const fileUploadArea = document.querySelector('.upload-area');
+    if (fileUploadArea && !('ontouchstart' in window)) {
         fileUploadArea.addEventListener('dragover', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -69,7 +69,16 @@ function initEventListeners() {
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 document.getElementById('documentFile').files = files;
+                // Trigger change event to show selected file
+                document.getElementById('documentFile').dispatchEvent(new Event('change'));
             }
+        });
+    }
+    
+    // Add touch-friendly click handler for upload area on mobile
+    if (fileUploadArea && 'ontouchstart' in window) {
+        fileUploadArea.addEventListener('click', function() {
+            document.getElementById('documentFile').click();
         });
     }
     
@@ -83,6 +92,48 @@ function initEventListeners() {
             }
         });
     }
+    
+    // Display selected filename for file input
+    const fileInput = document.getElementById('documentFile');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const selectedFileDiv = document.getElementById('selectedFile');
+            const fileNameSpan = document.getElementById('fileName');
+            
+            if (this.files[0]) {
+                fileNameSpan.textContent = this.files[0].name;
+                selectedFileDiv.style.display = 'block';
+                
+                // Scroll to show selected file on mobile
+                if (window.innerWidth <= 768) {
+                    selectedFileDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            } else {
+                selectedFileDiv.style.display = 'none';
+            }
+        });
+    }
+    
+    // Improve mobile keyboard handling
+    const questionInput = document.getElementById('questionInput');
+    if (questionInput && 'ontouchstart' in window) {
+        questionInput.addEventListener('focus', function() {
+            // Scroll to input on mobile when focused
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+    }
+    
+    // Auto-resize chat container on mobile orientation change
+    window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+            const chatContainer = document.getElementById('chatMessages');
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }, 500);
+    });
 }
 
 /**

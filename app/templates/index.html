@@ -4,28 +4,56 @@
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-12">
-        <h2 class="mb-4">Interactive Document Assistant</h2>
-        <p class="lead">Upload documents, crawl websites, and chat with your data using advanced AI technology.</p>
+    <div class="col-12 text-center">
+        <div class="hero-section">
+            <h2 class="fw-bold text-primary mb-2">
+                <i class="bi bi-robot me-2"></i>AI Document Assistant
+            </h2>
+            <p class="text-muted mb-3">
+                Transform your documents into intelligent conversations. Upload files, crawl websites, and get instant AI-powered insights.
+            </p>
+            <div class="feature-badges">
+                <span class="badge bg-primary-subtle text-primary me-2 mb-2">
+                    <i class="bi bi-file-earmark-text me-1"></i>PDF & DOCX Support
+                </span>
+                <span class="badge bg-success-subtle text-success me-2 mb-2">
+                    <i class="bi bi-globe me-1"></i>Web Crawling
+                </span>
+                <span class="badge bg-info-subtle text-info me-2 mb-2">
+                    <i class="bi bi-chat-dots me-1"></i>Smart Q&A
+                </span>
+                <span class="badge bg-warning-subtle text-warning mb-2">
+                    <i class="bi bi-lightning me-1"></i>Powered by Gemini 2.5 Flash
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row">
+<div class="row g-3 g-lg-4">
     <!-- Left Column: Data Sources -->
-    <div class="col-lg-4 mb-4">
-        <div class="card h-100 animate__animated animate__fadeIn">
-            <div class="card-body">
-                <h5 class="card-title">Data Sources</h5>
+    <div class="col-12 col-lg-4 order-2 order-lg-1">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
+            <div class="card-header bg-gradient text-white border-0">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-upload me-2"></i>Data Sources
+                </h5>
+            </div>
+            <div class="card-body p-3 p-lg-4">
                 
-                <ul class="nav nav-pills flex-column mb-4" role="tablist">
+                <ul class="nav nav-pills nav-fill mb-3 mb-lg-4" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab">
-                            <i class="bi bi-file-earmark-text me-2"></i>Upload Document
+                        <button class="nav-link active rounded-pill me-1 me-lg-2" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab">
+                            <i class="bi bi-cloud-upload me-1 me-lg-2"></i>
+                            <span class="d-none d-sm-inline">Upload Document</span>
+                            <span class="d-sm-none">Upload</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="url-tab" data-bs-toggle="tab" data-bs-target="#url" type="button" role="tab">
-                            <i class="bi bi-globe me-2"></i>Crawl URL
+                        <button class="nav-link rounded-pill" id="url-tab" data-bs-toggle="tab" data-bs-target="#url" type="button" role="tab">
+                            <i class="bi bi-globe2 me-1 me-lg-2"></i>
+                            <span class="d-none d-sm-inline">Crawl Website</span>
+                            <span class="d-sm-none">Crawl</span>
                         </button>
                     </li>
                 </ul>
@@ -34,14 +62,34 @@
                     <!-- Upload Document Tab -->
                     <div class="tab-pane fade show active" id="upload" role="tabpanel">
                         <form id="uploadForm" class="animate__animated animate__fadeIn">
-                            <div class="mb-3">
-                                <label for="documentFile" class="form-label">Select Document</label>
-                                <input class="form-control" type="file" id="documentFile" accept=".pdf,.docx,.txt,.html,.htm" required>
-                                <div class="form-text">Supported formats: PDF, DOCX, TXT, HTML</div>
+                            <div class="upload-area mb-3 mb-lg-4 p-3 p-lg-4 text-center border-2 border-dashed rounded-3">
+                                <i class="bi bi-cloud-upload display-4 text-primary mb-2 mb-lg-3"></i>
+                                <h6 class="mb-2 fs-6 fs-lg-5">
+                                    <span class="d-none d-sm-inline">Drop your document here or click to browse</span>
+                                    <span class="d-sm-none">Tap to select document</span>
+                                </h6>
+                                <p class="text-muted small mb-2 mb-lg-3">
+                                    <span class="d-none d-sm-inline">Supported formats: PDF, DOCX, TXT, HTML (Max 50MB)</span>
+                                    <span class="d-sm-none">PDF, DOCX, TXT, HTML</span>
+                                </p>
+                                <input class="form-control" type="file" id="documentFile" accept=".pdf,.docx,.txt,.html,.htm" required style="display: none;">
+                                <button type="button" class="btn btn-outline-primary btn-sm btn-lg-normal" onclick="document.getElementById('documentFile').click()">
+                                    <i class="bi bi-folder2-open me-1 me-lg-2"></i>
+                                    <span class="d-none d-sm-inline">Choose File</span>
+                                    <span class="d-sm-none">Browse</span>
+                                </button>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 animate__animated animate__pulse animate__infinite animate__slower">
+                            <div class="selected-file mb-3" id="selectedFile" style="display: none;">
+                                <div class="alert alert-info d-flex align-items-center p-2 p-lg-3">
+                                    <i class="bi bi-file-earmark-check me-2 flex-shrink-0"></i>
+                                    <span id="fileName" class="text-truncate"></span>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
                                 <span class="spinner-border spinner-border-sm loading-indicator" id="uploadLoading" role="status"></span>
-                                <i class="bi bi-cloud-upload me-2"></i>Upload & Process
+                                <i class="bi bi-rocket-takeoff me-1 me-lg-2"></i>
+                                <span class="d-none d-sm-inline">Process Document</span>
+                                <span class="d-sm-none">Process</span>
                             </button>
                         </form>
                         <div class="alert alert-info mt-3" id="uploadStatus" style="display: none;"></div>
@@ -50,18 +98,50 @@
                     <!-- Crawl URL Tab -->
                     <div class="tab-pane fade" id="url" role="tabpanel">
                         <form id="urlForm" class="animate__animated animate__fadeIn">
-                            <div class="mb-3">
-                                <label for="urlInput" class="form-label">Enter URL</label>
-                                <input type="url" class="form-control" id="urlInput" placeholder="https://example.com" required>
+                            <div class="mb-3 mb-lg-4">
+                                <label for="urlInput" class="form-label fw-semibold">Website URL</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-globe2"></i>
+                                    </span>
+                                    <input type="url" class="form-control border-start-0" id="urlInput" placeholder="https://example.com" required>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="maxDepth" class="form-label">Max Crawl Depth</label>
-                                <input type="number" class="form-control" id="maxDepth" min="1" max="5" value="1">
-                                <div class="form-text">Higher values will crawl more pages</div>
+                            <div class="mb-3 mb-lg-4">
+                                <label for="maxDepth" class="form-label fw-semibold">Crawl Depth</label>
+                                <select class="form-select form-select-lg" id="maxDepth">
+                                    <option value="1">
+                                        <span class="d-none d-sm-inline">Level 1 - Current page only</span>
+                                        <span class="d-sm-none">Level 1</span>
+                                    </option>
+                                    <option value="2" selected>
+                                        <span class="d-none d-sm-inline">Level 2 - Include linked pages</span>
+                                        <span class="d-sm-none">Level 2</span>
+                                    </option>
+                                    <option value="3">
+                                        <span class="d-none d-sm-inline">Level 3 - Deep crawl</span>
+                                        <span class="d-sm-none">Level 3</span>
+                                    </option>
+                                    <option value="4">
+                                        <span class="d-none d-sm-inline">Level 4 - Extensive crawl</span>
+                                        <span class="d-sm-none">Level 4</span>
+                                    </option>
+                                    <option value="5">
+                                        <span class="d-none d-sm-inline">Level 5 - Maximum depth</span>
+                                        <span class="d-sm-none">Level 5</span>
+                                    </option>
+                                </select>
+                                <div class="form-text small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    <span class="d-none d-sm-inline">Higher levels will take longer but gather more content</span>
+                                    <span class="d-sm-none">Higher levels = more content</span>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 animate__animated animate__pulse animate__infinite animate__slower">
+                            <button type="submit" class="btn btn-success btn-lg w-100">
                                 <span class="spinner-border spinner-border-sm loading-indicator" id="urlLoading" role="status"></span>
-                                <i class="bi bi-search me-2"></i>Crawl & Ingest
+                                <i class="bi bi-compass me-1 me-lg-2"></i>
+                                <span class="d-none d-sm-inline">Start Crawling</span>
+                                <span class="d-sm-none">Crawl</span>
                             </button>
                         </form>
                         <div class="alert alert-info mt-3" id="urlStatus" style="display: none;"></div>
@@ -72,39 +152,58 @@
     </div>
     
     <!-- Right Column: Chat Interface -->
-    <div class="col-lg-8 mb-4">
-        <div class="card h-100 animate__animated animate__fadeIn animate__delay-1s">
-            <div class="card-body d-flex flex-column">
-                <h5 class="card-title">Chat with your Data</h5>
+    <div class="col-12 col-lg-8 order-1 order-lg-2">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn animate__delay-1s">
+            <div class="card-header bg-gradient text-white border-0">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-chat-square-text me-2"></i>AI Chat Interface
+                </h5>
+            </div>
+            <div class="card-body d-flex flex-column p-3 p-lg-4">
                 
-                <div class="chat-container flex-grow-1 mb-3" id="chatMessages">
-                    <div class="assistant-message animate__animated animate__fadeInLeft">
-                        <p>👋 Hello! I'm your AI assistant. Upload a document or crawl a URL to get started.</p>
-                        <p>I can help you:</p>
-                        <ul>
-                            <li>Answer questions about your documents</li>
-                            <li>Extract information from PDFs, Word docs, and web pages</li>
-                            <li>Summarize content and provide insights</li>
-                        </ul>
+                <div class="chat-container flex-grow-1 mb-4" id="chatMessages">
+                    <div class="welcome-message text-center py-5">
+                        <div class="mb-4">
+                            <i class="bi bi-robot display-1 text-primary opacity-75"></i>
+                        </div>
+                        <h4 class="text-primary mb-3">Welcome to AI Document Assistant!</h4>
+                        <p class="text-muted mb-4">Get started by uploading a document or crawling a website, then ask me anything about your content.</p>
+                        <div class="row g-2 g-lg-3 text-start">
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="feature-card p-2 p-lg-3 rounded">
+                                    <i class="bi bi-question-circle text-primary mb-2 d-block"></i>
+                                    <small class="fw-semibold">Ask Questions</small>
+                                    <br><small class="text-muted">Get instant answers from your documents</small>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="feature-card p-2 p-lg-3 rounded">
+                                    <i class="bi bi-search text-success mb-2 d-block"></i>
+                                    <small class="fw-semibold">Extract Information</small>
+                                    <br><small class="text-muted">Find specific details quickly</small>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <div class="feature-card p-2 p-lg-3 rounded">
+                                    <i class="bi bi-list-ul text-info mb-2 d-block"></i>
+                                    <small class="fw-semibold">Summarize Content</small>
+                                    <br><small class="text-muted">Get key insights and summaries</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="loading-container text-center my-3 animate__animated animate__fadeIn" id="chatLoadingContainer">
-                    <div class="pulse-loading">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                    <p class="text-muted small mt-2">Thinking...</p>
-                </div>
+
                 
-                <form id="questionForm" class="d-flex">
-                    <input type="text" id="questionInput" class="form-control me-2" placeholder="Ask a question about your documents..." required>
-                    <button type="submit" class="btn btn-primary animate__animated animate__pulse animate__infinite animate__slower">
-                        <span class="spinner-border spinner-border-sm loading-indicator" id="chatLoading" role="status"></span>
-                        <i class="bi bi-send"></i>
-                    </button>
+                <form id="questionForm" class="chat-input-form">
+                    <div class="input-group input-group-lg">
+                        <input type="text" id="questionInput" class="form-control border-0 shadow-sm" placeholder="Ask me anything about your documents..." required>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <span class="spinner-border spinner-border-sm loading-indicator" id="chatLoading" role="status"></span>
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

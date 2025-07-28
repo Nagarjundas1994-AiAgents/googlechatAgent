@@ -61,7 +61,7 @@ def setup_vector_search():
             print("⏳ This may take 20-30 minutes...")
             
             # Create a GCS bucket for the index data
-            bucket_name = f"{project_id}-vector-data"
+            bucket_name = f"{project_id}-vector-data-central"
             print(f"📦 Using GCS bucket: gs://{bucket_name}")
             
             try:

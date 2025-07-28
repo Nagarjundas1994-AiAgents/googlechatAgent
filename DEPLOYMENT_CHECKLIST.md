@@ -169,15 +169,15 @@ gcloud iam service-accounts describe ai-agent-sa@PROJECT_ID.iam.gserviceaccount.
 ### Test Endpoints
 ```bash
 # Health check
-curl https://your-service-url/health
+curl https://ai-agent-nzhkpa3xwa-uc.a.run.app/health
 
 # Test webhook
-curl -X POST https://your-service-url/webhook \
+curl -X POST https://ai-agent-nzhkpa3xwa-uc.a.run.app/webhook \
   -H "Content-Type: application/json" \
   -d '{"text": "Hello", "sessionInfo": {"session": "test"}}'
 
 # Test document upload
-curl -X POST https://your-service-url/upload-document \
+curl -X POST https://ai-agent-nzhkpa3xwa-uc.a.run.app/upload-document \
   -F "file=@test.pdf" \
   -F "session_id=test123"
 ```
@@ -247,5 +247,5 @@ If deployment fails:
 
 **Deployment Date:** ___________
 **Deployed By:** ___________
-**Service URL:** ___________
+**Service URL:** https://ai-agent-nzhkpa3xwa-uc.a.run.app/
 **Agent ID:** ___________
